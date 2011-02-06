@@ -2,7 +2,7 @@
   $(function(){
     var host = location.hostname;
     var url = 'ws://'+host+':8080/';
-      ws = new WebSocket(url);
+    var ws = new WebSocket(url);
     var $ws = $(ws);
 
     var dispMessage = function(msg) {
@@ -60,10 +60,6 @@
         }
       }
     });
-
-    // $(window).bind('deviceorientation', function(event){
-      // var ori = event.originalEvent;
-      // ws.send('alpha:'+ori.alpha+' beta:'+ori.beta+' gamma:'+ori.gamma);
-    // });
   });
+
 })(jQuery);
