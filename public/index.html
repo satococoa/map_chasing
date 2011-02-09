@@ -39,22 +39,22 @@
           marker.setTitle($('#message').val());
           $('#message').val('');
           $.mobile.changePage($('#page-map'), 'pop', true, false);
+        });
 
-          google.maps.event.addListener(marker, 'click', function(){
-            $('#message').val(marker.getTitle());
-            $.mobile.changePage($('#page-message'), 'pop', false, false);
-            $('#set-message').unbind();
-            $('#set-message').bind('click', function(){
-              marker.setTitle($('#message').val());
-              $('#message').val('');
-              $.mobile.changePage($('#page-map'), 'pop', true, false);
-            });
+        google.maps.event.addListener(marker, 'click', function(){
+          $('#message').val(marker.getTitle());
+          $.mobile.changePage($('#page-message'), 'pop', false, false);
+          $('#set-message').unbind();
+          $('#set-message').bind('click', function(){
+            marker.setTitle($('#message').val());
+            $('#message').val('');
+            $.mobile.changePage($('#page-map'), 'pop', true, false);
           });
         });
         google.maps.event.addListener(marker, 'dblclick', function(){
           marker.setMap(null);
         });
-      }); // doubleclick
+      }); // map.doubleclick
 
     });
   </script>
