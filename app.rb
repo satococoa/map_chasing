@@ -1,3 +1,3 @@
 get '/' do
-  'Hello, world!'
+  redirect '/index.html'
 end
