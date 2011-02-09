@@ -36,8 +36,9 @@
     });
 
     $(window).bind('devicemotion', function(event){
-      var threshold = 10;
-      var acc = event.originalEvent.accelerationIncludingGravity;
+      var threshold = 5;
+      // var acc = event.originalEvent.accelerationIncludingGravity;
+      var acc = event.originalEvent.acceleration;
       if (Math.abs(acc.x) > threshold) {
         if (acc.x > 0) {
           ws.send('右');
