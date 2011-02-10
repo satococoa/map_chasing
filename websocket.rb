@@ -9,7 +9,6 @@ EventMachine.run {
     ws.onopen {
       sid = @channel.subscribe{|msg| ws.send msg}
       @logger.debug "#{sid} connected!"
-      # @channel.push "#{sid} connected!"
       
       ws.onmessage {|msg|
         @logger.debug "<#{sid}>: #{msg}"
@@ -18,7 +17,6 @@ EventMachine.run {
       ws.onclose {
         @channel.unsubscribe(sid)
         @logger.debug "#{sid} disconnected!"
-        # @channel.push "#{sid} disconnected!"
       }
     }
   end
