@@ -1,8 +1,8 @@
+var host = location.hostname;
+var url = 'ws://'+host+':8080/';
+var ws = new WebSocket(url);
 (function($){
   $(function(){
-    var host = location.hostname;
-    var url = 'ws://'+host+':8080/';
-    var ws = new WebSocket(url);
     var $ws = $(ws);
 
     var dispMessage = function(msg) {
@@ -25,11 +25,11 @@
       dispMessage('disconnected');
     });
 
-    $ws.bind('message', function(event){
-      var msg = event.originalEvent.data;
-      if (msg == '') return;
-      dispMessage("> "+msg);
-    });
+    // $ws.bind('message', function(event){
+      // var msg = event.originalEvent.data;
+      // if (msg == '') return;
+      // dispMessage("> "+msg);
+    // });
 
     $(window).unload(function(){
       ws.close();
