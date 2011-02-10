@@ -7,6 +7,7 @@
   <script src="/js/jquery-1.5.min.js"></script>
   <script src="/js/jquery.mobile-1.0a3.min.js"></script>
   <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+  <script type="text/javascript" src="/js/infobox_packed.js"></script>
   <script src="/js/script.js"></script>
   <script>
     // load google map
@@ -34,22 +35,42 @@
           draggable: true
         });
 
+        var opt = {
+          content: '',
+          boxStyle: {
+            border: "1px solid black",
+            textAlign: "center",
+            fontSize: "8pt",
+            width: "50px",
+            backgroundColor: 'yellow'
+          },
+          disableAutoPan: true,
+          pixelOffset: new google.maps.Size(-25, -50),
+          position: marker.getPosition(),
+          closeBoxURL: "",
+          isHidden: false,
+          pane: "mapPane",
+          enableEventPropagation: true
+        };
+        var ibLabel = new InfoBox(opt);
+
         $('#set-message').unbind();
         $('#set-message').bind('click', function(){
           marker.setTitle($('#message').val());
+          ibLabel.setContent($('#message').val());
+          ibLabel.open(map);
           $('#message').val('');
           $.mobile.changePage($('#page-map'), 'pop', true, false);
         });
 
+        google.maps.event.addListener(marker, 'dragend', function(){
+          ibLabel.setPosition(marker.getPosition());
+        });
+        google.maps.event.addListener(marker, 'drag', function(){
+          ibLabel.setPosition(marker.getPosition());
+        });
         google.maps.event.addListener(marker, 'click', function(){
-          $('#message').val(marker.getTitle());
-          $.mobile.changePage($('#page-message'), 'pop', false, false);
-          $('#set-message').unbind();
-          $('#set-message').bind('click', function(){
-            marker.setTitle($('#message').val());
-            $('#message').val('');
-            $.mobile.changePage($('#page-map'), 'pop', true, false);
-          });
+          ibLabel.open(map);
         });
         google.maps.event.addListener(marker, 'dblclick', function(){
           marker.setMap(null);
