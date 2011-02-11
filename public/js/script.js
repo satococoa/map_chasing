@@ -43,62 +43,25 @@
     var initialLocation = new google.maps.LatLng(defaultLatLng.lat, defaultLatLng.lng);
     map.setCenter(initialLocation);
 
-    var labelOpt = {
-      content: '',
-      boxStyle: {
-        border: "1px solid black",
-        textAlign: "center",
-        fontSize: "8pt",
-        width: "100px",
-        backgroundColor: 'yellow'
-      },
-      disableAutoPan: true,
-      pixelOffset: new google.maps.Size(-50, 0),
-      position: initialLocation,
-      closeBoxURL: "",
-      isHidden: false,
-      pane: "mapPane",
-      enableEventPropagation: true
-    };
-
-    var marker = new google.maps.Marker({
-      position: map.getCenter(),
-      map: map,
-      icon: new google.maps.MarkerImage(User.image),
-      title: User.nickname
-    });
-    var ibLabel = new InfoBox(labelOpt);
-    ibLabel.setContent(marker.getTitle());
-    ibLabel.setPosition(marker.getPosition());
-    ibLabel.open(map);
+    Users[0].appear(map, defaultLatLng.lat, defaultLatLng.lng);
     $.post(
       '/users',
-      {lat: defaultLatLng.lat, long: defaultLatLng.lng}
+      {lat: defaultLatLng.lat, lng: defaultLatLng.lng},
+      socket_id
     );
 
     google.maps.event.addListener(map, 'drag', function(event){
-      marker.setPosition(map.getCenter());
-      ibLabel.setPosition(map.getCenter());
+      var pos = map.getCenter();
+      Users[0].move(pos.lat(), pos.lng());
     });
     google.maps.event.addListener(map, 'dragend', function(event){
-      marker.setPosition(map.getCenter());
-      ibLabel.setPosition(map.getCenter());
+      var pos = map.getCenter();
+      Users[0].move(pos.lat(), pos.lng());
     });
 
     pusher.bind('appear', function(data) {
-      var latlng = new google.maps.LatLng(parseFloat(data.lat), parseFloat(data.long));
-      var marker = new google.maps.Marker({
-        position: latlng,
-        map: map,
-        icon: new google.maps.MarkerImage(data.image),
-        title: data.nickname
-      });
-      var ibLabel = new InfoBox(labelOpt);
-      ibLabel.setContent(marker.getTitle());
-      ibLabel.setPosition(marker.getPosition());
-      ibLabel.open(map);
-
-      Users[data.uid] = {marker: marker, label: ibLabel};
+      Users[data.uid] = new User(data);
+      Users[data.uid].appear(map);
     });
   });
 

@@ -88,6 +88,7 @@ PLATFORMS
 DEPENDENCIES
   em-http-request
   haml
+  json
   ohm
   omniauth
   pusher

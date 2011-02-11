@@ -62,7 +62,7 @@ end
 get '/' do
   login_required
   user = current_user
-  haml :index, :locals => {:uid => user.uid, :nickname => user.nickname, :image => user.image}
+  haml :index, :locals => {:user => user.to_hash.to_json}
 end
 
 get '/logout' do
@@ -72,15 +72,10 @@ end
 
 post '/users' do
   user = current_user
-  user.update_attributes :lat => params[:lat], :long => params[:long], :modified => Time.now.to_s
+  user.update_attributes :lat => params[:lat], :long => params[:lng], :modified => Time.now.to_s
   user.save
 
-  data = {}
-  user.attributes.each do |at|
-    data[at] = user.send(at)
-  end
-  
-  Pusher['map-chasing'].trigger('appear', data, params[:socket_id])
+  Pusher['map-chasing'].trigger('appear', user.to_hash, params[:socket_id])
 end
 # put '/user/:uid' do |uid|
   # Pusher['map-chasing'].trigger('move', {:uid => params[:uid]}, params[:socket_id])

@@ -9,11 +9,12 @@
   %script{:src => 'http://maps.google.com/maps/api/js?sensor=true'}
   %script{:src => '/js/infobox_packed.js'}
   %script{:src => 'http://js.pusherapp.com/1.7/pusher.js'}
+  %script{:src => '/js/user.js'}
   %script{:src => '/js/script.js'}
   :javascript
     var pusher_key  = '#{Pusher.key}';
-    var User = {uid: '#{uid}', nickname: '#{nickname}', image: '#{image}'};
     var Users = {};
+    Users[0] = new User(#{user});
 
 %body
   =yield

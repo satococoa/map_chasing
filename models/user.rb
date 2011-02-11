@@ -12,4 +12,12 @@ class User < Ohm::Model
   attribute :modified
 
   counter :score
+
+  def to_hash
+    hash = {}
+    attributes.each do |attr|
+      hash[attr] = self.send(attr)
+    end
+    hash
+  end
 end
