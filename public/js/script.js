@@ -90,7 +90,7 @@
     // 設問関連
     var setQuestion = function setQuestion(q) {
       $('#page-map h1').text(q.name + ' を探せ!');
-      alert('Mission: '+q.name+' を探せ!\nアイコンを重ねると得点になります。');
+      $('#sticker').html('Mission: '+q.name+" を探せ!<br />(アイコンを重ねると得点になります。)").show().delay(5000).hide('slow');
       var sw = new google.maps.LatLng(q.sw[0], q.sw[1]);
       var ne = new google.maps.LatLng(q.ne[0], q.ne[1]);
       window.bounds = new google.maps.LatLngBounds(sw, ne);

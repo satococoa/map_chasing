@@ -57,7 +57,7 @@ User.prototype = {
           '/user/'+Users[0].uid+'/score',
           {_method: 'PUT'}
         );
-        alert('Good!! Try the next question!');
+        $('#sticker').text('おめでとう！').show().delay(10000).hide('slow');
       }
     });
   },
