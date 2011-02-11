@@ -53,8 +53,7 @@
       var marker = new google.maps.Marker({
         position: event.latLng,
         map: map,
-        title: '',
-        draggable: true
+        title: ''
       });
 
       $('#set-message').unbind();
