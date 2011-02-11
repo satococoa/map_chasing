@@ -31,7 +31,7 @@
 
     // load GMap
     var mapOptions = {
-      zoom: 12,
+      zoom: 13,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       disableDoubleClickZoom: true,
       navigationControl: false,
@@ -89,8 +89,8 @@
 
     // 設問関連
     var setQuestion = function setQuestion(q) {
-      alert('Mission: '+q.name+' を探せ!\nアイコンを重ねると得点になります。');
       $('#page-map h1').text(q.name + ' を探せ!');
+      alert('Mission: '+q.name+' を探せ!\nアイコンを重ねると得点になります。');
       var sw = new google.maps.LatLng(q.sw[0], q.sw[1]);
       var ne = new google.maps.LatLng(q.ne[0], q.ne[1]);
       window.bounds = new google.maps.LatLngBounds(sw, ne);

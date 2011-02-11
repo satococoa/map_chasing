@@ -52,12 +52,12 @@ User.prototype = {
       );
 
       if (window.bounds.contains(pos)) {
-        alert('Good!! Try the next question!');
         Users[0].setScore(Users[0].score+1);
         $.post(
           '/user/'+Users[0].uid+'/score',
           {_method: 'PUT'}
         );
+        alert('Good!! Try the next question!');
       }
     });
   },
