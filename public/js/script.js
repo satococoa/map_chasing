@@ -1,20 +1,21 @@
 (function($){
-  var host = location.hostname;
-  var url = 'ws://'+host+':8080/';
-  var ws = new WebSocket(url);
-  var $ws = $(ws);
-  $(function(){
-    $ws.bind('open', function(){
-    });
-    $ws.bind('close', function(){
-    });
-    $(window).unload(function(){
-      ws.close();
-    });
-  });
-
   // load google map
   $('#page-map').live('pagecreate', function(){
+    var pusher = new Pusher(window.pusher_key);
+    var socket_id;
+    pusher.bind('pusher:connection_established', function(event){
+      socket_id = event.socket_id;
+    });
+
+    // Enable pusher logging - don't include this in production
+    Pusher.log = function() {
+      if (window.console) window.console.log.apply(window.console, arguments);
+    };
+
+    // Flash fallback logging - don't include this in production
+    WEB_SOCKET_DEBUG = true;
+    pusher.subscribe('test_channel');
+
     // load GMap
     var mapOptions = {
       zoom: 12,
@@ -56,25 +57,25 @@
         draggable: true
       });
 
-      var ibLabel = new InfoBox(labelOpt);
-
       $('#set-message').unbind();
       $('#set-message').bind('click', function(){
-        marker.setTitle($('#message').val());
-        ibLabel.setContent($('#message').val());
+        var msg = $('#message').val();
+        marker.setTitle(msg);
+
+        var ibLabel = new InfoBox(labelOpt);
+        ibLabel.setContent(msg);
+        ibLabel.setPosition(marker.getPosition());
         ibLabel.open(map);
+
         $('#message').val('');
         $.mobile.changePage($('#page-map'), 'pop', true, false);
-        ws.send(marker.getTitle()+':'+marker.getPosition().toString());
-      });
-
-      google.maps.event.addListener(marker, 'click', function(){
-        ibLabel.open(map);
+        var data = marker.getTitle()+':'+marker.getPosition().toString();
+        $.post('/push', {msg: data, socket_id: socket_id});
       });
     }); // map.doubleclick
 
-    $(ws).bind('message', function(event){
-      var msg = event.originalEvent.data;
+    pusher.bind('my_event', function(data) {
+      var msg = data.msg;
       if (!msg.match(/(.+):\((.+), (.+)\)/)) {
         return;
       }

@@ -1,5 +1,6 @@
 source :rubygems
 gem 'sinatra'
+gem 'haml'
 gem 'omniauth'
 gem 'ohm'
 gem 'pusher'

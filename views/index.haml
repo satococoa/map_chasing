@@ -1,0 +1,12 @@
+#page-map{:'data-role' => 'page', :style => 'width:100%;height:100%'}
+  %div{:'data-role' => 'header'}
+    %h1 Map Chasing
+  %div{:'data-role' => 'content', :style => 'width:100%;height:100%;padding:0;'}
+    #map-canvas{:style => 'width:100%;height:100%'}
+
+#page-message{:'data-role' => 'page'}
+  %div{:'data-role' => 'header'}
+    %h1 ラベルの入力
+  %div{:'data-role' => 'content'}
+    %textarea#message
+    %input#set-message{:type => 'button', :value => 'OK'}
