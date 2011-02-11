@@ -66,6 +66,8 @@ get '/' do
 end
 
 get '/logout' do
+  user = current_user
+  Pusher['map-chasing'].trigger('disappear', {:uid => user.uid})
   logout
   haml :logout, :layout => :plain
 end
@@ -85,10 +87,6 @@ put '/user/:uid' do |uid|
 
   Pusher['map-chasing'].trigger('move', user.to_hash, params[:socket_id])
 end
-
-# delete '/user/:uid' do |uid|
-  # Pusher['map-chasing'].trigger('disappear', {:uid => params[:uid]}, params[:socket_id])
-# end
 
 get '/auth/twitter/callback' do
   auth_hash = request.env['omniauth.auth']

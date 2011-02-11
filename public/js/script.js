@@ -83,6 +83,13 @@
         Users[data.uid].appear(map);
       }
     });
+
+    pusher.bind('disappear', function(data) {
+      var uid = data.uid;
+      if (!!Users[uid]) {
+        Users[uid].destroy();
+      }
+    });
   });
 
 })(jQuery);

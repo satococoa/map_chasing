@@ -64,10 +64,11 @@ User.prototype = {
     self.marker.setPosition(pos);
     self.label.setPosition(pos);
   },
-  destroy: function(pos) {
+  destroy: function() {
     var self = this;
     self.marker.setMap(null);
     self.label.close();
+    delete(Users[self.uid]);
     delete(self);
   }
 };
