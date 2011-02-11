@@ -13,6 +13,7 @@
   %script{:src => '/js/script.js'}
   :javascript
     var pusher_key  = '#{Pusher.key}';
+    var socket_id;
     var Users = {};
     Users[0] = new User(#{user});
 

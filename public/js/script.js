@@ -14,7 +14,6 @@
   // load google map
   $('#page-map').live('pagecreate', function(){
     var pusher = new Pusher(window.pusher_key);
-    var socket_id;
     pusher.bind('pusher:connection_established', function(event){
       socket_id = event.socket_id;
     });
@@ -48,19 +47,8 @@
     Users[0].appear(map, defaultLatLng.lat, defaultLatLng.lng);
     $.post(
       '/users',
-      {lat: defaultLatLng.lat, lng: defaultLatLng.lng},
-      socket_id
+      {lat: defaultLatLng.lat, lng: defaultLatLng.lng, socket_id: socket_id}
     );
-
-    google.maps.event.addListener(map, 'dragend', function(event){
-      var pos = map.getCenter();
-      Users[0].move(pos);
-      $.post(
-        '/user/'+Users[0].uid,
-        {_method: 'PUT', lat: pos.lat(), lng: pos.lng()},
-        socket_id
-      );
-    });
 
     pusher.bind('appear', function(data) {
       var uid = data.uid;

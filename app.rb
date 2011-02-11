@@ -66,9 +66,11 @@ get '/' do
 end
 
 get '/logout' do
-  user = current_user
-  Pusher['map-chasing'].trigger('disappear', {:uid => user.uid})
-  logout
+  if login?
+    user = current_user
+    Pusher['map-chasing'].trigger('disappear', {:uid => user.uid})
+    logout
+  end
   haml :logout, :layout => :plain
 end
 

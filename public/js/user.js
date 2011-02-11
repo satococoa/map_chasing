@@ -26,11 +26,30 @@ User.prototype = {
   setMarker: function(map) {
     var self = this;
     var latlng = new google.maps.LatLng(parseFloat(self.lat), parseFloat(self.long));
+    if (self.uid == Users[0].uid) {
+      var draggableFlag = true;
+    } else {
+      var draggableFlag = false;
+    }
+      
     self.marker = new google.maps.Marker({
       position: latlng,
       map: map,
       icon: new google.maps.MarkerImage(self.image),
-      title: self.nickname
+      title: self.nickname,
+      draggable: draggableFlag
+    });
+
+    google.maps.event.addListener(self.marker, 'drag', function(event){
+      var pos = self.marker.getPosition();
+      self.marker.getMap().setCenter(pos);
+    });
+    google.maps.event.addListener(self.marker, 'dragend', function(event){
+      var pos = self.marker.getPosition();
+      $.post(
+        '/user/'+Users[0].uid,
+        {_method: 'PUT', lat: pos.lat(), lng: pos.lng(), socket_id: socket_id}
+      );
     });
   },
   setLabel: function(map) {
@@ -57,7 +76,7 @@ User.prototype = {
     self.label = new InfoBox(labelOpt);
     self.label.setContent(self.marker.getTitle());
     self.label.setPosition(self.marker.getPosition());
-    self.label.open(map);
+    self.label.open(map, self.marker);
   },
   move: function(pos) {
     var self = this;
