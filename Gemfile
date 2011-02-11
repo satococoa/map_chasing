@@ -1,3 +1,6 @@
 source :rubygems
 gem 'sinatra'
-gem 'em-websocket'
+gem 'omniauth'
+gem 'ohm'
+gem 'pusher'
+gem 'em-http-request'
