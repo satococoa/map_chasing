@@ -87,8 +87,6 @@
 
     pusher.bind('appear', function(data) {
       var latlng = new google.maps.LatLng(parseFloat(data.lat), parseFloat(data.long));
-      console.log(latlng.toString());
-      console.log(data.lat, data.long);
       var marker = new google.maps.Marker({
         position: latlng,
         map: map,
@@ -100,7 +98,7 @@
       ibLabel.setPosition(marker.getPosition());
       ibLabel.open(map);
 
-      Users[data.uid] = marker;
+      Users[data.uid] = {marker: marker, label: ibLabel};
     });
   });
 
