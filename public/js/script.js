@@ -45,7 +45,7 @@
     map.setCenter(initialLocation);
     /*
     google.maps.event.addListener(map, 'click', function(event){
-      console.log(event.latLng.lat(), event.latLng.lng());
+      console.log('['+event.latLng.lat()+', '+event.latLng.lng()+']');
     });
     */
 
