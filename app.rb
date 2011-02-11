@@ -77,9 +77,15 @@ post '/users' do
 
   Pusher['map-chasing'].trigger('appear', user.to_hash, params[:socket_id])
 end
-# put '/user/:uid' do |uid|
-  # Pusher['map-chasing'].trigger('move', {:uid => params[:uid]}, params[:socket_id])
-# end
+
+put '/user/:uid' do |uid|
+  user = current_user
+  user.update_attributes :lat => params[:lat], :long => params[:lng], :modified => Time.now.to_s
+  user.save
+
+  Pusher['map-chasing'].trigger('move', user.to_hash, params[:socket_id])
+end
+
 # delete '/user/:uid' do |uid|
   # Pusher['map-chasing'].trigger('disappear', {:uid => params[:uid]}, params[:socket_id])
 # end

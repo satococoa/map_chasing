@@ -19,6 +19,7 @@
       socket_id = event.socket_id;
     });
 
+    /*
     // Enable pusher logging - don't include this in production
     Pusher.log = function() {
       if (window.console) window.console.log.apply(window.console, arguments);
@@ -26,6 +27,7 @@
 
     // Flash fallback logging - don't include this in production
     WEB_SOCKET_DEBUG = true;
+    */
     pusher.subscribe('map-chasing');
 
     // load GMap
@@ -50,18 +52,36 @@
       socket_id
     );
 
-    google.maps.event.addListener(map, 'drag', function(event){
-      var pos = map.getCenter();
-      Users[0].move(pos.lat(), pos.lng());
-    });
     google.maps.event.addListener(map, 'dragend', function(event){
       var pos = map.getCenter();
-      Users[0].move(pos.lat(), pos.lng());
+      Users[0].move(pos);
+      $.post(
+        '/user/'+Users[0].uid,
+        {_method: 'PUT', lat: pos.lat(), lng: pos.lng()},
+        socket_id
+      );
     });
 
     pusher.bind('appear', function(data) {
-      Users[data.uid] = new User(data);
-      Users[data.uid].appear(map);
+      var uid = data.uid;
+      if (!!Users[uid]) {
+        var pos = new google.maps.LatLng(data.lat, data.long);
+        Users[uid].move(pos);
+      } else {
+        Users[data.uid] = new User(data);
+        Users[data.uid].appear(map);
+      }
+    });
+
+    pusher.bind('move', function(data) {
+      var uid = data.uid;
+      if (!!Users[uid]) {
+        var pos = new google.maps.LatLng(data.lat, data.long);
+        Users[uid].move(pos);
+      } else {
+        Users[data.uid] = new User(data);
+        Users[data.uid].appear(map);
+      }
     });
   });
 

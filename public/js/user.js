@@ -20,7 +20,6 @@ User.prototype = {
     if (lng != undefined) {
       self.long = lng;
     }
-    console.log(self.lat+':'+self.long);
     self.setMarker(map);
     self.setLabel(map);
   },
@@ -60,10 +59,15 @@ User.prototype = {
     self.label.setPosition(self.marker.getPosition());
     self.label.open(map);
   },
-  move: function(lat, lng) {
+  move: function(pos) {
     var self = this;
-    var pos = new google.maps.LatLng(lat, lng);
     self.marker.setPosition(pos);
     self.label.setPosition(pos);
+  },
+  destroy: function(pos) {
+    var self = this;
+    self.marker.setMap(null);
+    self.label.close();
+    delete(self);
   }
 };
