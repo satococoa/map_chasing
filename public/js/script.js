@@ -1,4 +1,16 @@
 (function($){
+  function random_get_in_tokyo() {
+    var long_b = 139.9606977426758;
+    var long_d = 139.55832347509767;
+    var lat_b = 35.58725649814075;
+    var lat_d = 35.76908809589606;
+
+    var lat = lat_b - ((lat_b-lat_d) * Math.random());
+    var long = long_b - ((long_b-long_d) * Math.random());
+
+    return {lat: lat, lng:long};
+  }
+
   // load google map
   $('#page-map').live('pagecreate', function(){
     var pusher = new Pusher(window.pusher_key);
@@ -14,20 +26,22 @@
 
     // Flash fallback logging - don't include this in production
     WEB_SOCKET_DEBUG = true;
-    pusher.subscribe('test_channel');
+    pusher.subscribe('map-chasing');
 
     // load GMap
     var mapOptions = {
       zoom: 12,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
-      disableDoubleClickZoom: true
+      disableDoubleClickZoom: true,
+      navigationControl: false,
+      scaleControl: false,
+      scrollwheel: false,
+      streetViewControl: false
     };
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    var initialLocation;
-    navigator.geolocation.getCurrentPosition(function(position){
-      initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-      map.setCenter(initialLocation);
-    });
+    var defaultLatLng = random_get_in_tokyo();
+    var initialLocation = new google.maps.LatLng(defaultLatLng.lat, defaultLatLng.lng);
+    map.setCenter(initialLocation);
 
     var labelOpt = {
       content: '',
@@ -47,50 +61,46 @@
       enableEventPropagation: true
     };
 
-    google.maps.event.addListener(map, 'dblclick', function(event){
-      $.mobile.changePage($('#page-message'), 'pop', false, false);
+    var marker = new google.maps.Marker({
+      position: map.getCenter(),
+      map: map,
+      icon: new google.maps.MarkerImage(User.image),
+      title: User.nickname
+    });
+    var ibLabel = new InfoBox(labelOpt);
+    ibLabel.setContent(marker.getTitle());
+    ibLabel.setPosition(marker.getPosition());
+    ibLabel.open(map);
+    $.post(
+      '/users',
+      {lat: defaultLatLng.lat, long: defaultLatLng.lng}
+    );
 
+    google.maps.event.addListener(map, 'drag', function(event){
+      marker.setPosition(map.getCenter());
+      ibLabel.setPosition(map.getCenter());
+    });
+    google.maps.event.addListener(map, 'dragend', function(event){
+      marker.setPosition(map.getCenter());
+      ibLabel.setPosition(map.getCenter());
+    });
+
+    pusher.bind('appear', function(data) {
+      var latlng = new google.maps.LatLng(parseFloat(data.lat), parseFloat(data.long));
+      console.log(latlng.toString());
+      console.log(data.lat, data.long);
       var marker = new google.maps.Marker({
-        position: event.latLng,
-        map: map,
-        title: ''
-      });
-
-      $('#set-message').unbind();
-      $('#set-message').bind('click', function(){
-        var msg = $('#message').val();
-        marker.setTitle(msg);
-
-        var ibLabel = new InfoBox(labelOpt);
-        ibLabel.setContent(msg);
-        ibLabel.setPosition(marker.getPosition());
-        ibLabel.open(map);
-
-        $('#message').val('');
-        $.mobile.changePage($('#page-map'), 'pop', true, false);
-        var data = marker.getTitle()+':'+marker.getPosition().toString();
-        $.post('/push', {msg: data, socket_id: socket_id});
-      });
-    }); // map.doubleclick
-
-    pusher.bind('my_event', function(data) {
-      var msg = data.msg;
-      if (!msg.match(/(.+):\((.+), (.+)\)/)) {
-        return;
-      }
-      var title = RegExp.$1;
-      var lat = RegExp.$2;
-      var lng = RegExp.$3;
-      var latlng = new google.maps.LatLng(lat, lng);
-      var marker = new google.maps.Marker({
-        title: title,
         position: latlng,
-        map: map
+        map: map,
+        icon: new google.maps.MarkerImage(data.image),
+        title: data.nickname
       });
       var ibLabel = new InfoBox(labelOpt);
-      ibLabel.setContent(title);
-      ibLabel.setPosition(latlng);
+      ibLabel.setContent(marker.getTitle());
+      ibLabel.setPosition(marker.getPosition());
       ibLabel.open(map);
+
+      Users[data.uid] = marker;
     });
   });
 
