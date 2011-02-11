@@ -51,6 +51,7 @@
     );
 
     pusher.bind('appear', function(data) {
+      if (Users[0].uid == data.uid) return false;
       var uid = data.uid;
       if (!!Users[uid]) {
         var pos = new google.maps.LatLng(data.lat, data.long);
@@ -62,6 +63,7 @@
     });
 
     pusher.bind('move', function(data) {
+      if (Users[0].uid == data.uid) return false;
       var uid = data.uid;
       if (!!Users[uid]) {
         var pos = new google.maps.LatLng(data.lat, data.long);
@@ -73,6 +75,7 @@
     });
 
     pusher.bind('disappear', function(data) {
+      if (Users[0].uid == data.uid) return false;
       var uid = data.uid;
       if (!!Users[uid]) {
         Users[uid].destroy();
