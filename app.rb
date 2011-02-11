@@ -26,11 +26,24 @@ helpers do
   def login?
     !session[:uid].nil?
   end
+  def login(auth_hash)
+    session[:uid] = auth_hash['uid']
+    session[:nickname] = auth_hash['user_info']['nickname']
+    session[:image] = auth_hash['user_info']['image']
+  end
+  def logout
+    session.clear
+  end
 end
 
 get '/' do
   login_required
   haml :index
+end
+
+get '/logout' do
+  logout
+  haml :logout, :layout => :plain
 end
 
 post '/push' do
@@ -40,8 +53,6 @@ end
 
 get '/auth/twitter/callback' do
   auth_hash = request.env['omniauth.auth']
-  session[:uid] = auth_hash['uid']
-  session[:nickname] = auth_hash['user_info']['nickname']
-  session[:image] = auth_hash['user_info']['image']
+  login(auth_hash)
   redirect '/'
 end
