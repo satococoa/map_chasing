@@ -43,7 +43,6 @@ helpers do
       user = users.first
     end
     load_to_session(user)
-    Pusher['map-chasing_1'].trigger('login', {:msg => params[:msg]}, params[:socket_id])
   end
   def load_to_session(user)
     user.attributes.each do |at|
