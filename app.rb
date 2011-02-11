@@ -1,28 +1,28 @@
-require 'pp'
-
-configure do
+configure :production do
   enable :sessions
-  
+  use OmniAuth::Builder do
+    provider :twitter, ENV['TWITTER_KEY'], ENV['TWITTER_SECRET']
+  end
+  uri = URI.parse(ENV['REDISTOGO_URL'])
+  Ohm.connect(:host => uri.host, :port => uri.port, :password => uri.password)
+end
+
+configure :development do
+  enable :sessions
   config = YAML::load_file('config.yml')
   use OmniAuth::Builder do
     provider :twitter, config['twitter']['key'], config['twitter']['secret']
   end
-  if ENV['RACK_ENV'] == 'production'
-    uri = URI.parse(ENV['REDISTOGO_URL'])
-    Ohm.connect(:host => uri.host, :port => uri.port, :password => uri.password)
-  else
-    Ohm.connect
-    Pusher.app_id = config['pusher']['app_id']
-    Pusher.key = config['pusher']['key']
-    Pusher.secret = config['pusher']['secret']
-  end
+  Ohm.connect
+  Pusher.app_id = config['pusher']['app_id']
+  Pusher.key = config['pusher']['key']
+  Pusher.secret = config['pusher']['secret']
 end
 
 helpers do
   def login_required
     redirect '/auth/twitter' unless login?
   end
-
   def login?
     !session[:uid].nil?
   end
