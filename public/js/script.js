@@ -43,6 +43,11 @@
     var defaultLatLng = random_get_in_tokyo();
     var initialLocation = new google.maps.LatLng(defaultLatLng.lat, defaultLatLng.lng);
     map.setCenter(initialLocation);
+    /*
+    google.maps.event.addListener(map, 'click', function(event){
+      console.log(event.latLng.lat(), event.latLng.lng());
+    });
+    */
 
     Users[0].appear(map, defaultLatLng.lat, defaultLatLng.lng);
     $.post(
@@ -81,6 +86,27 @@
         Users[uid].destroy();
       }
     });
+
+    // 設問関連
+    var setQuestion = function setQuestion(q) {
+      alert('Mission: '+q.name+' を探せ!\nアイコンを重ねると得点になります。');
+      $('#page-map h1').text(q.name + ' を探せ!');
+      var sw = new google.maps.LatLng(q.sw[0], q.sw[1]);
+      var ne = new google.maps.LatLng(q.ne[0], q.ne[1]);
+      window.bounds = new google.maps.LatLngBounds(sw, ne);
+    }
+    setQuestion(q);
+
+    pusher.bind('question', function(data) {
+      setQuestion(data);
+    });
+
+    pusher.bind('score', function(data) {
+      if (!!Users[data.uid]) {
+        Users[data.uid].setScore(data.score);
+      }
+    });
+
   });
 
 })(jQuery);

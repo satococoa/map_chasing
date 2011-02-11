@@ -50,6 +50,15 @@ User.prototype = {
         '/user/'+Users[0].uid,
         {_method: 'PUT', lat: pos.lat(), lng: pos.lng(), socket_id: socket_id}
       );
+
+      if (window.bounds.contains(pos)) {
+        alert('Good!! Try the next question!');
+        Users[0].setScore(Users[0].score+1);
+        $.post(
+          '/user/'+Users[0].uid+'/score',
+          {_method: 'PUT'}
+        );
+      }
     });
   },
   setLabel: function(map) {
@@ -74,7 +83,7 @@ User.prototype = {
 
     var self = this;
     self.label = new InfoBox(labelOpt);
-    self.label.setContent(self.marker.getTitle());
+    self.label.setContent(self.marker.getTitle()+' ('+self.score+')');
     self.label.setPosition(self.marker.getPosition());
     self.label.open(map, self.marker);
   },
@@ -89,5 +98,12 @@ User.prototype = {
     self.label.close();
     delete(Users[self.uid]);
     delete(self);
+  },
+  setScore: function(score) {
+    var self = this;
+    if (score != undefined) {
+      self.score = score;
+    }
+    self.label.setContent(self.nickname+' ('+self.score+')');
   }
 };

@@ -1,4 +1,5 @@
 require './models/user'
+require './models/question'
 
 configure :production do
   enable :sessions
@@ -62,7 +63,13 @@ end
 get '/' do
   login_required
   user = current_user
-  haml :index, :locals => {:user => user.to_hash.to_json}
+  cur = Ohm.redis.get('current_question')
+  if cur.nil?
+    q = Question::random_get
+  else
+    q = Question::Questions[cur.to_i]
+  end
+  haml :index, :locals => {:user => user.to_hash.to_json, :q => q.to_json}
 end
 
 get '/logout' do
@@ -88,6 +95,23 @@ put '/user/:uid' do |uid|
   user.save
 
   Pusher['map-chasing'].trigger('move', user.to_hash, params[:socket_id])
+end
+
+put '/user/:uid/score' do |uid|
+  user = current_user
+  user.update_attributes :modified => Time.now.to_s
+  user.save
+  user.incr :score
+
+  while
+    old = Ohm.redis.get('current_question')
+    cur = Question::random_get_index
+    break if old.nil? || old.to_i != cur
+  end
+  Ohm.redis.set('current_question', cur)
+
+  Pusher['map-chasing'].trigger('score', user.to_hash, params[:socket_id])
+  Pusher['map-chasing'].trigger('question', Question::Questions[cur])
 end
 
 get '/auth/twitter/callback' do

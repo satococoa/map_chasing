@@ -18,6 +18,7 @@ class User < Ohm::Model
     attributes.each do |attr|
       hash[attr] = self.send(attr)
     end
+    hash[:score] = self.score
     hash
   end
 end

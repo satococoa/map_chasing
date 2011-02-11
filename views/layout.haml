@@ -14,8 +14,10 @@
   :javascript
     var pusher_key  = '#{Pusher.key}';
     var socket_id;
+    var q = #{q};
     var Users = {};
     Users[0] = new User(#{user});
+    var bounds;
 
 %body
   =yield
