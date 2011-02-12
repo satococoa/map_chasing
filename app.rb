@@ -51,7 +51,7 @@ helpers do
   end
   def logout
     session.clear
-    Pusher['map-chasing_1'].trigger('logout', {:msg => params[:msg]}, params[:socket_id])
+    Pusher['map-chasing'].trigger('logout', {:msg => params[:msg]}, params[:socket_id])
   end
   def current_user
     return nil unless login?
