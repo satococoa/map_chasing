@@ -13,11 +13,10 @@
 
   // load google map
   $('#page-map').live('pageshow', function(){
+    $('#map-canvas').height($(window).height());
     google.maps.event.trigger(window.map, 'resize');
   });
   $('#page-map').live('pagecreate', function(){
-    $('#map-canvas').width($(window).width());
-    $('#map-canvas').height($(window).height());
     var pusher = new Pusher(window.pusher_key);
     pusher.bind('pusher:connection_established', function(event){
       socket_id = event.socket_id;
