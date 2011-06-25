@@ -12,7 +12,12 @@
   }
 
   // load google map
+  $('#page-map').live('pageshow', function(){
+    google.maps.event.trigger(window.map, 'resize');
+  });
   $('#page-map').live('pagecreate', function(){
+    $('#map-canvas').width($(window).width());
+    $('#map-canvas').height($(window).height());
     var pusher = new Pusher(window.pusher_key);
     pusher.bind('pusher:connection_established', function(event){
       socket_id = event.socket_id;
@@ -40,6 +45,7 @@
       streetViewControl: false
     };
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    window.map = map;
     var defaultLatLng = random_get_in_tokyo();
     var initialLocation = new google.maps.LatLng(defaultLatLng.lat, defaultLatLng.lng);
     map.setCenter(initialLocation);

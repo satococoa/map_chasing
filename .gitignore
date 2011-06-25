@@ -1,6 +1,6 @@
 config.yml
 .bundle
 log/*.log
-tmp/**/*
+tmp
 .DS_Store
 bundle
